@@ -12,7 +12,7 @@ def show_patterns(U, ax=None):
     ax.imshow(U, cmap=plt.cm.copper,
               interpolation='bilinear')
     ax.set_axis_off()
-    
+
     
 #Simulation Parameters
 Lx = 120
