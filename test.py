@@ -26,8 +26,8 @@ fig, axes = plt.subplots(2, 5, figsize=(20, 8))
 step_plot = n // 5
 
 #Simulation Parameters
-Da = 0.1
-Ds = 0.1
+Da = 0.008
+Ds = 0.16
 ka = 0.0025
 ks = 0.003
 ha = 0.00025
@@ -35,19 +35,16 @@ hs = 0.003
 
 A = np.random.rand(Lx, Ly)
 S = np.random.rand(Lx, Ly)
-B = np.random.rand(Lx, Ly)
-I = np.random.rand(Lx, Ly)
+
 #Simulation Loop 
 dt = 1
 dx = 1
+
 for i in tqdm(range(n), total=n):
     
     # We update the variables.
     DA = laplacian2D(A,dx)
     DS = laplacian2D(S,dx)
-    DB = laplacian2D(B,dx)
-    DI = laplacian2D(I,dx)
-    
     
     dAdt = Da * DA + ka * (S * (A**2) - A) + ha
     dSdt = Ds * DS - ks * (S * (A**2)) + hs
