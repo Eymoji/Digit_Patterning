@@ -8,8 +8,8 @@ def laplacian2D(M,dx):
         - 2 * M + np.roll(M,shift=+1,axis=1) + np.roll(M,shift=-1,axis=1) # second derivative in y
     ) / (dx ** 2)
     
-def show_patterns(U, ax=None):
-    ax.imshow(U, cmap=plt.cm.copper,
+def show_patterns(U, color, ax=None):
+    ax.imshow(U, cmap=color,
               interpolation='bilinear')
     ax.set_axis_off()
 
@@ -22,7 +22,8 @@ dt = .01  # time step
 T = dt*50000 #total duration of the simulation
 n = int(T / dt)  # number of iterations
 
-fig, axes = plt.subplots(4, 5, figsize=(20, 8))
+#fig, axes = plt.subplots(4, 5, figsize=(20, 8))
+fig, axes = plt.subplots(3, 5, figsize=(20, 8))
 step_plot = n // 5
 
 #Simulation Parameters
@@ -43,6 +44,7 @@ A = np.random.rand(Lx, Ly)
 S = np.random.rand(Lx, Ly)
 B = np.random.rand(Lx, Ly)
 I = np.random.rand(Lx, Ly)
+AB = np.zeros((Lx, Ly, 3))
 
 #Simulation Loop 
 dt = 1
@@ -65,24 +67,37 @@ for i in tqdm(range(n), total=n):
     S += dSdt * dt
     B += dBdt * dt
     I += dIdt * dt
-    
+    AB = np.zeros((Lx, Ly, 3))
+    AB[:,:,0], AB[:,:,2] = np.array(255*(np.max(A)-A)/np.max(A), dtype = int), np.array(255*(np.max(B)-B)/np.max(B), dtype = int)
+
 
     # We plot the state of the system at different times.
     if i % step_plot == 0 and i < 5 * step_plot:
         ax = axes[0, i // step_plot]
-        show_patterns(A, ax=ax)
-        ax.set_title(f'$t={i * dt:.2f}$')
+        ax.imshow(A, cmap='Blues',
+              interpolation='bilinear', alpha = 0.5)
+        ax.set_axis_off()
         
-        ax = axes[1, i // step_plot]
-        show_patterns(S, ax=ax)
-        ax.set_title(f'$t={i * dt:.2f}$')
+#        ax = axes[1, i // step_plot]
+#        show_patterns(S, ax=ax)
+#        ax.set_title(f'$t={i * dt:.2f}$')
         
         ax = axes[2, i // step_plot]
-        show_patterns(B, ax=ax)
-        ax.set_title(f'$t={i * dt:.2f}$')
+        ax.imshow(B, cmap='Reds',
+              interpolation='bilinear', alpha = 0.5)
+        ax.set_axis_off()
         
-        ax = axes[3, i // step_plot]
-        show_patterns(I, ax=ax)
-        ax.set_title(f'$t={i * dt:.2f}$')
+#        ax = axes[3, i // step_plot]
+#        show_patterns(I, ax=ax)
+#        ax.set_title(f'$t={i * dt:.2f}$')
+
+        ax = axes[1, i // step_plot]
+        ax.imshow(A, cmap='Blues',
+              interpolation='bilinear', alpha = 0.5)
+        ax.imshow(B, cmap='Reds',
+              interpolation='bilinear', alpha = 0.5)
+        ax.set_axis_off()
+        
+        
         
 plt.show()
