@@ -13,7 +13,7 @@ def show_patterns(U, ax=None):
               interpolation='bilinear')
     ax.set_axis_off()
 
-    
+
 #Simulation Parameters
 Lx = 120
 Ly = 40
