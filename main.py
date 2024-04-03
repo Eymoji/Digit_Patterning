@@ -5,10 +5,10 @@ from outils import *
 
 
 #Simulation Parameters
-Lx, Ly = 128, 18    # size of the 2D grid
+Lx, Ly = 150, 24    # size of the 2D grid
 dx = 1              # space step
-dt = 20              # time step
-T = 60000        # total duration of the simulation
+dt = 20             # time step
+T = 60000*2           # total duration of the simulation
 n = int(T / dt)     # number of iterations
 
 #fig, axes = plt.subplots(4, 5, figsize=(20, 8))
@@ -39,6 +39,7 @@ S = np.ones((Lx, Ly))
 B = np.ones((Lx, Ly))
 I = np.ones((Lx, Ly))
 digit = draw_ellipse_mask(Lx, Ly, Lx//2-2-Ly//2-2, Ly//2-2)
+digit = draw_ellipse_mask_2(Lx, Ly, L=128, W=20, e=0)
 # digit = np.ones((Lx, Ly))
 
 for i in tqdm(range(n), total=n):
@@ -65,9 +66,9 @@ for i in tqdm(range(n), total=n):
         AB = np.ones((Lx, Ly, 3), dtype = float)
         AB[:,:,0] -= normalize(B)
         AB[:,:,1] -= normalize(B)
-        AB[:,:,1] -= normalize(A)
-        AB[:,:,2] -= normalize(A)
-        AB *= digit[:,:,np.newaxis] + AB / 2
+        AB[:,:,1] -= normalize(A) ** 2
+        AB[:,:,2] -= normalize(A) ** 2
+        AB += (1-digit[:,:,np.newaxis]) * 3/4
         
         ax = axes[i // step_plot]
         ax.imshow(AB)
