@@ -5,6 +5,8 @@ from outils import *
 import imageio
 import os
 
+
+ListParam = 1.e-3 * np.arange(5,10,0.2)
 # digit, Lx, Ly = matrix_from_black_white_png('hand2.png')
 
 #Simulation Parameters
@@ -15,7 +17,7 @@ T = 120000          # total duration of the simulation
 n = int(T / dt) + 1 # number of iterations
 
 #fig, axes = plt.subplots(4, 5, figsize=(20, 8))
-fig, axes = plt.subplots(1, 2, figsize=(30, 10))
+fig, axes = plt.subplots(2, len(ListParam), figsize=(240, 20))
 step_plot = n // 5
 plot_name = '4B'
 gif_images_folder = 'gif_images/'
@@ -53,12 +55,15 @@ digit = np.ones((Lx, Ly))
 borders = digit_borders(digit)[:,:,np.newaxis]
 
 
-A = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
-S = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
-B = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
-I = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
 
-for ia, Da in enumerate([0.1, 0.2, 0.3, 0.4, 0.5]):
+for ia, Db in enumerate(ListParam):
+    print(" Experiment ", ia + 1, '/', len(ListParam))
+    A = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
+    S = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
+    B = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
+    I = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
+
+    
     for i in tqdm(range(n), total=n):
         A = diffuse_2d(A, Da, dt)
         S = diffuse_2d(S, Ds, dt)

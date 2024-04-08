@@ -39,10 +39,6 @@ ha = 0.00025
 hb = 0.00187
 hs = 0.003
 
-A = np.random.rand(Lx, Ly)
-S = np.random.rand(Lx, Ly)
-B = np.random.rand(Lx, Ly)
-I = np.random.rand(Lx, Ly)
 A = np.ones((Lx, Ly))
 S = np.ones((Lx, Ly))
 B = np.ones((Lx, Ly))
@@ -58,7 +54,7 @@ lp = 50         # limit distance of growth from the tip of the digit (in pixels)
 
 for i in tqdm(range(n), total=n):
     t = i * dt
-    L = L0 if t < T0 else L0 + (Lfin - L0) * (t - T0) / (T - T0)
+    L = L0 if t < T0 else L0 + (Lfin - L0) * (t - T0) // (T - T0)
     DL = L - L0
     
     digit = draw_ellipse_mask(Lx, Ly, L, W, e, DL)
@@ -71,6 +67,7 @@ for i in tqdm(range(n), total=n):
     B = diffuse_2d(B, Db, dt) * mask + (1-mask) * B
     I = diffuse_2d(I, Di, dt) * mask + (1-mask) * I
     
+    A[Lx//2 - DL//2 - L//2 - e, Ly//2] = 1
     dAdt = digit * (ka * (S * (A**2) - A) + ha) + (1 - digit) * (- kdeg * A)
     dSdt = digit * (- ks * (S * (A**2)) + hs)
     dBdt = digit * (kb * (S ** 2) * (B**2 / I + hb) / (1 + kappab * A * B ** 2) - kb * B)
@@ -88,8 +85,8 @@ for i in tqdm(range(n), total=n):
         AB = np.ones((Lx, Ly, 3), dtype = float)
         AB[:,:,0] -= np.power(normalize(B), 1)
         AB[:,:,1] -= np.power(normalize(B), 1)
-        # AB[:,:,1] -= np.power(normalize(A), 1)
-        # AB[:,:,2] -= np.power(normalize(A), 1)
+        AB[:,:,1] -= np.power(normalize(A), 1)
+        AB[:,:,2] -= np.power(normalize(A), 1)
         
         # contrast the image
         AB = contrast_rgb(AB, 1.5)

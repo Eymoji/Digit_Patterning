@@ -5,7 +5,7 @@ from outils import *
 import imageio
 import os
 
-ListParam = np.arange(0.001,0.008,0.0002)
+ListParam = 1.e-5 * np.arange(0.1,2,0.1) #np.arange(0.001,0.008,0.0002) pour Da
 LenListParam = len(ListParam)
 
 #Simulation Parameters
@@ -52,7 +52,7 @@ lp = 50         # limit distance of growth from the tip of the digit (in pixels)
 
 digit = draw_ellipse_mask(Lx, Ly, Lfin, W, e, 0)
 
-for ia, Da in enumerate(ListParam): # 0.007, 0.008
+for ia, kdeg in enumerate(ListParam): # 0.007, 0.008
     A = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
     S = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2
     B = np.ones((Lx, Ly)) + ratio_random * np.random.rand(Lx, Ly) - ratio_random/2

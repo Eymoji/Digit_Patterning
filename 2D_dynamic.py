@@ -24,7 +24,7 @@ gif_images_folder = 'gif_images/'
 # Create the folder if it does not exist
 if not os.path.exists(gif_images_folder):
     os.makedirs(gif_images_folder)
-step_gif = n // 50
+step_gif = n // 120
 
 # Reaction Parameters
 Da = 0.008
@@ -41,21 +41,17 @@ ha = 0.00025
 hb = 0.00187
 hs = 0.003
 
-A = np.random.rand(Lx, Ly)
-S = np.random.rand(Lx, Ly)
-B = np.random.rand(Lx, Ly)
-I = np.random.rand(Lx, Ly)
 A = np.ones((Lx, Ly))
 S = np.ones((Lx, Ly))
 B = np.ones((Lx, Ly))
 I = np.ones((Lx, Ly))
 
-L0 = 90         # initial length of the digit
+L0 = 40         # initial length of the digit
 Lfin = 140      # final length of the digit
-T0 = T // 2     # time to start the digit growth
+T0 = T // 2      # time to start the digit growth
 W = 20          # width of the digit (in pixels)
 e = 10          # roundness of the digit tip
-lp = 50         # limit distance of growth from the tip of the digit (in pixels)
+lp = 25         # limit distance of growth from the tip of the digit (in pixels)
 digit = draw_ellipse_mask(Lx, Ly, L0, W, e, 0)
 
 for i in tqdm(range(n), total=n):
@@ -63,21 +59,26 @@ for i in tqdm(range(n), total=n):
     if t < T0:
         L = L0
     else:
-        if ((Lfin - L0) * (t - T0)) // (T - T0) > ((Lfin - L0) * (t-1 - T0)) // (T - T0):
-            # L = L0 + ((Lfin - L0) * (t - T0)) // (T - T0)
-            L += 1
-            n = np.random.randint(Lx//2-L0//2, Lx//2+L-L0//2)
-            digit = duplicate_line(digit, n)
-            A = duplicate_line(A, n)
-            S = duplicate_line(S, n)
-            B = duplicate_line(B, n)
-            I = duplicate_line(I, n)
+        Lold = L
+        L = L0 + ((Lfin - L0) * (t - T0)) // (T - T0)
+        if L > Lold:
+            if np.random.randint(2) < 1:
+                N = np.random.randint(Lx//2-L0//2, Lx//2+L-L0//2)
+                digit = duplicate_line(digit, N)
+                A = duplicate_line(A, N)
+                S = duplicate_line(S, N)
+                B = duplicate_line(B, N)
+                I = duplicate_line(I, N)
+            else:
+                N = Lx//2+L-L0//2
+                digit = duplicate_line(digit, N)
     
-    # DL = L - L0
+    DL = L - L0
     # digit = draw_ellipse_mask(Lx, Ly, L, W, e, DL)
     
     # circle mask around the tip of the digit of coordinates (Lx//2 - DL//2, Ly//2) of radius lp
-    mask = 1# if t < T0 else draw_circle_mask(Lx, Ly, Lx//2 - DL//2 - L//2, Ly//2, lp)
+    mask = np.ones((Lx, Ly)) if t < T0 else draw_circle_mask(Lx, Ly, Lx//2+L-L0//2, Ly//2, lp)
+    # or np.random.randint(0,100) < 3
     
     A = diffuse_2d(A, Da, dt) * mask + (1-mask) * A
     S = diffuse_2d(S, Ds, dt) * mask + (1-mask) * S
@@ -101,6 +102,8 @@ for i in tqdm(range(n), total=n):
         AB = np.ones((Lx, Ly, 3), dtype = float)
         AB[:,:,0] -= np.power(normalize(B), 1)
         AB[:,:,2] -= np.power(normalize(B), 1)
+        
+        # AB[:,:,1] -= draw_circle_mask(Lx, Ly, Lx//2+L-L0//2, Ly//2, lp)
         # AB[:,:,1] -= np.power(normalize(A), 1)
         # AB[:,:,2] -= np.power(normalize(A), 1)
         
